@@ -65,19 +65,24 @@ def last_trade_day(d_str):
 
 # ---------------- 数据源 (每个独立异常处理) ----------------
 def fetch_spot():
-    """全市场实时行情 -> 涨跌家数 / 成交额"""
-    try:
-        df = ak.stock_zh_a_spot_em()
-        pct = df["涨跌幅"]
-        up = int((pct > 0).sum())
-        down = int((pct < 0).sum())
-        flat = int((pct == 0).sum())
-        total = up + down + flat
-        amt = float(df["成交额"].sum())
-        return {"up": up, "down": down, "flat": flat, "total": total, "amount": amt, "ok": True}
-    except Exception as e:
-        log(f"spot 取数失败: {e}")
-        return {"ok": False, "up": 0, "down": 0, "flat": 0, "total": 0, "amount": 0.0}
+    """全市场实时行情 -> 涨跌家数 / 成交额 (带重试)"""
+    import time
+    for attempt in range(3):
+        try:
+            df = ak.stock_zh_a_spot_em()
+            pct = df["涨跌幅"]
+            up = int((pct > 0).sum())
+            down = int((pct < 0).sum())
+            flat = int((pct == 0).sum())
+            total = up + down + flat
+            amt = float(df["成交额"].sum())
+            return {"up": up, "down": down, "flat": flat, "total": total, "amount": amt, "ok": True}
+        except Exception as e:
+            log(f"spot 第{attempt+1}次取数失败: {e}")
+            if attempt < 2:
+                time.sleep(5)
+    log("spot 重试用尽, 使用默认值")
+    return {"ok": False, "up": 0, "down": 0, "flat": 0, "total": 0, "amount": 0.0}
 
 
 def fetch_zt_pool(d):
