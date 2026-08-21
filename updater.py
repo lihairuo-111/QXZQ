@@ -65,7 +65,7 @@ def last_trade_day(d_str):
 
 # ---------------- 数据源 (每个独立异常处理) ----------------
 def fetch_spot():
-    """全市场实时行情 -> 涨跌家数 / 成交额 (带重试)"""
+    """全市场实时行情 -> 涨跌家数 / 成交额 (AKShare重试 + 东方财富分布接口备源)"""
     import time
     for attempt in range(3):
         try:
@@ -78,10 +78,36 @@ def fetch_spot():
             amt = float(df["成交额"].sum())
             return {"up": up, "down": down, "flat": flat, "total": total, "amount": amt, "ok": True}
         except Exception as e:
-            log(f"spot 第{attempt+1}次取数失败: {e}")
+            log(f"spot AKShare第{attempt+1}次失败: {e}")
             if attempt < 2:
                 time.sleep(5)
-    log("spot 重试用尽, 使用默认值")
+    # 备源: 东方财富涨跌分布接口(单次请求, 不分页, 不易限流)
+    try:
+        import requests
+        d = datetime.now().strftime("%Y%m%d")
+        url = ("https://push2ex.eastmoney.com/getTopicZDFenBu"
+               "?ut=7eea3edcaed734bea9cbfc24409ed989&dession=1281818258&date=" + d)
+        r = requests.get(url, timeout=15, headers={
+            "User-Agent": "Mozilla/5.0", "Referer": "https://quote.eastmoney.com/"})
+        zdfb = r.json().get("data", {}).get("zdfb", [])
+        up = down = flat = 0
+        for row in zdfb:
+            zone = row.get("f2")
+            cnt = int(row.get("f3", 0))
+            if zone is None:
+                continue
+            z = float(zone)
+            if z > 0:
+                up += cnt
+            elif z < 0:
+                down += cnt
+            else:
+                flat += cnt
+        total = up + down + flat
+        log(f"spot 备源成功: 涨{up} 跌{down} 平{flat}")
+        return {"up": up, "down": down, "flat": flat, "total": total, "amount": 0.0, "ok": True}
+    except Exception as e:
+        log(f"spot 备源也失败: {e}")
     return {"ok": False, "up": 0, "down": 0, "flat": 0, "total": 0, "amount": 0.0}
 
 
