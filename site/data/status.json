@@ -2,10 +2,10 @@
   "today": "2026-08-21",
   "trade_day": "2026-08-21",
   "is_trading_day": true,
-  "last_update": "2026-08-21 06:40:06",
+  "last_update": "2026-08-21 06:44:27",
   "success": true,
   "error": null,
   "note": "正常更新",
-  "temperature": 51.5,
+  "temperature": 51.3,
   "phase": "修复阶段"
 }

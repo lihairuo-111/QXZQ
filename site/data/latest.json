@@ -1,7 +1,7 @@
 {
   "trade_day": "2026-08-21",
-  "update_time": "2026-08-21 06:41:11",
-  "temperature": 51.5,
+  "update_time": "2026-08-21 06:45:24",
+  "temperature": 51.3,
   "prev_temperature": null,
   "change": 0.0,
   "phase": "修复阶段",
@@ -18,7 +18,7 @@
     "max_board": 3,
     "broken_count": 18,
     "broken_rate": 25.0,
-    "prev_zt_feedback": -0.5,
+    "prev_zt_feedback": -0.6,
     "amount_yi": 0,
     "index_close": 3903.72,
     "index_chg": 0.24,
@@ -32,7 +32,7 @@
     "limit_up": 45.0,
     "limit_down": 72,
     "broken_rate": 50.0,
-    "prev_zt_feedback": 45.0,
+    "prev_zt_feedback": 44.0,
     "max_board": 48.6,
     "volume_active": 50.0,
     "index_trend": 50
