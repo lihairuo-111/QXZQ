@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A股情绪周期监控</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0d1117; --card:#161b22; --border:#30363d; --text:#e6edf3; --muted:#8b949e;
+    --red:#e6433b; --green:#1eaa62; --orange:#f5a623; --blue:#4a90e2; --purple:#9b59b6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;padding:18px;line-height:1.5}
+  .topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+  .title{font-size:22px;font-weight:700}
+  .title small{font-size:13px;color:var(--muted);font-weight:400;margin-left:8px}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
+  .badge.ok{background:rgba(30,170,98,.15);color:var(--green);border:1px solid rgba(30,170,98,.4)}
+  .badge.fail{background:rgba(230,67,59,.15);color:var(--red);border:1px solid rgba(230,67,59,.4)}
+  .badge.warn{background:rgba(245,166,35,.15);color:var(--orange);border:1px solid rgba(245,166,35,.4)}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .dot.live{background:var(--green);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(4,1fr)}
+  @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+  .card.full{grid-column:1/-1}
+  .card.span2{grid-column:span 2}
+  @media(max-width:900px){.card.span2{grid-column:auto}}
+  .lbl{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .big{font-size:38px;font-weight:800;line-height:1.1}
+  .big .unit{font-size:16px;color:var(--muted);font-weight:400}
+  .phase-tag{display:inline-block;padding:4px 12px;border-radius:6px;font-size:13px;font-weight:600;margin-top:4px}
+  .metric-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+  .metric-row:last-child{border-bottom:0}
+  .metric-row .k{color:var(--muted);font-size:13px}
+  .metric-row .v{font-weight:600;font-size:14px}
+  .red{color:var(--red)} .green{color:var(--green)} .orange{color:var(--orange)} .blue{color:var(--blue)}
+  .chart-wrap{height:300px;margin-top:8px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+  th,td{padding:8px 6px;text-align:center;border-bottom:1px solid var(--border)}
+  th{color:var(--muted);font-weight:600;font-size:12px}
+  td.l{text-align:left}
+  .footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center;line-height:1.8}
+  .entry-bar{height:8px;background:#21262d;border-radius:4px;margin-top:8px;overflow:hidden}
+  .entry-bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:4px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="title">A股情绪周期监控 <small>V3</small></div>
+  <div id="statusBadge" class="badge warn"><span class="dot"></span>加载中...</div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="lbl">综合情绪温度</div>
+    <div class="big"><span id="temp">--</span><span class="unit">/100</span></div>
+    <div id="phaseTag" class="phase-tag">--</div>
+    <div class="metric-row"><span class="k">较前日</span><span id="chg" class="v">--</span></div>
+  </div>
+  <div class="card">
+    <div class="lbl">入场机会</div>
+    <div class="big"><span id="entry">--</span><span class="unit">/100</span></div>
+    <div class="entry-bar"><i id="entryBar" style="width:0%"></i></div>
+    <div class="metric-row"><span class="k">当日策略</span><span id="signal" class="v orange">--</span></div>
+  </div>
+  <div class="card span2">
+    <div class="lbl">核心指标</div>
+    <div class="metric-row"><span class="k">上涨 / 下跌</span><span id="breadth" class="v">--</span></div>
+    <div class="metric-row"><span class="k">涨停 / 跌停</span><span id="limit" class="v">--</span></div>
+    <div class="metric-row"><span class="k">炸板率</span><span id="broken" class="v">--</span></div>
+    <div class="metric-row"><span class="k">最高连板</span><span id="board" class="v">--</span></div>
+    <div class="metric-row"><span class="k">昨涨停今均反馈</span><span id="prevZt" class="v">--</span></div>
+    <div class="metric-row"><span class="k">成交额(亿)</span><span id="amount" class="v">--</span></div>
+    <div class="metric-row"><span class="k">上证趋势</span><span id="idxTrend" class="v">--</span></div>
+  </div>
+
+  <div class="card full">
+    <div class="lbl">历史情绪走势 · 近30交易日</div>
+    <div class="chart-wrap"><canvas id="chart"></canvas></div>
+  </div>
+
+  <div class="card full">
+    <div class="lbl">近期明细</div>
+    <table>
+      <thead><tr><th>日期</th><th>温度</th><th>变化</th><th>阶段</th><th>入场</th><th>信号</th><th>涨停</th><th>炸板率</th></tr></thead>
+      <tbody id="histBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  <div>数据对应交易日：<b id="tradeDay">--</b> ｜ 最后更新：<b id="updateTime">--</b> ｜ 数据源：AKShare</div>
+  <div id="statusNote"></div>
+  <div style="margin-top:6px;opacity:.6">仅供学习研究，不构成投资建议</div>
+</div>
+
+<script>
+function colorChg(v){return v>0?'red':v<0?'green':''}
+function fmtChg(v){return v===0?'持平':(v>0?'+':'')+v}
+function phaseColor(p){
+  return {'极度恐慌':'#e6433b','情绪冰点':'#f5a623','修复阶段':'#4a90e2','活跃加速':'#1eaa62','亢奋退潮':'#9b59b6'}[p]||'#8b949e';
+}
+async function loadJSON(url){
+  const r=await fetch(url,{cache:'no-store'});
+  if(!r.ok) throw new Error(url+' '+r.status);
+  return r.json();
+}
+async function init(){
+  try{
+    const [latest,status,history]=await Promise.all([
+      loadJSON('data/latest.json'),
+      loadJSON('data/status.json'),
+      loadJSON('data/history.json').catch(()=>[])
+    ]);
+    // 状态徽章
+    const sb=document.getElementById('statusBadge');
+    if(status.success){
+      sb.className='badge ok';sb.innerHTML='<span class="dot live"></span>数据已更新';
+    }else{
+      sb.className='badge fail';sb.innerHTML='<span class="dot"></span>自动更新失败';
+    }
+    if(!status.is_trading_day){
+      sb.className='badge warn';sb.innerHTML='<span class="dot"></span>非交易日 · 最近交易日数据';
+    }
+    // 温度
+    document.getElementById('temp').textContent=latest.temperature;
+    const pt=document.getElementById('phaseTag');
+    pt.textContent=latest.phase;pt.style.background=phaseColor(latest.phase)+'22';pt.style.color=phaseColor(latest.phase);
+    const chg=latest.change||0;
+    const ce=document.getElementById('chg');ce.textContent=fmtChg(chg);ce.className='v '+colorChg(chg);
+    // 入场
+    document.getElementById('entry').textContent=latest.entry_score;
+    document.getElementById('entryBar').style.width=latest.entry_score+'%';
+    document.getElementById('signal').textContent=latest.signal;
+    // 指标
+    const ind=latest.indicators||{};
+    document.getElementById('breadth').innerHTML='<span class="red">'+ind.up+'</span> / <span class="green">'+ind.down+'</span>'+(ind.breadth_pct!==undefined?' <span class="muted">('+ind.breadth_pct+'%)</span>':'');
+    document.getElementById('limit').innerHTML='<span class="red">'+ind.limit_up+'</span> / <span class="green">'+ind.limit_down+'</span>';
+    document.getElementById('broken').textContent=(ind.broken_rate!==undefined?ind.broken_rate+'%':'--');
+    document.getElementById('board').textContent=ind.max_board||0;
+    const pz=ind.prev_zt_feedback;
+    const pze=document.getElementById('prevZt');pze.textContent=(pz!==undefined?pz+'%':'--');pze.className='v '+colorChg(pz);
+    document.getElementById('amount').textContent=ind.amount_yi||0;
+    const ic=ind.index_chg;
+    const ite=document.getElementById('idxTrend');
+    ite.innerHTML=ind.index_trend+' <span class="'+colorChg(ic)+'">'+(ind.index_close||'')+'('+(ic!==undefined?fmtChg(ic)+'%':'')+')</span>';
+    // 历史
+    document.getElementById('tradeDay').textContent=latest.trade_day;
+    document.getElementById('updateTime').textContent=latest.update_time;
+    document.getElementById('statusNote').textContent=status.note||'';
+    drawChart(history);
+    fillTable(history);
+  }catch(e){
+    document.getElementById('statusBadge').className='badge fail';
+    document.getElementById('statusBadge').innerHTML='<span class="dot"></span>数据加载失败: '+e.message;
+    console.error(e);
+  }
+}
+function drawChart(history){
+  const h=[...history].slice(-30);
+  const labels=h.map(x=>x.date.slice(5));
+  const tempData=h.map(x=>x.temperature);
+  const entryData=h.map(x=>x.entry_score);
+  new Chart(document.getElementById('chart'),{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'情绪温度',data:tempData,borderColor:'#e6433b',backgroundColor:'rgba(230,67,59,.1)',tension:.3,fill:true,pointRadius:2},
+      {label:'入场机会',data:entryData,borderColor:'#4a90e2',backgroundColor:'rgba(74,144,226,.08)',tension:.3,fill:false,pointRadius:2}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#8b949e',font:{size:11}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y}}},
+      scales:{
+        x:{ticks:{color:'#8b949e',font:{size:10}},grid:{color:'#21262d'}},
+        y:{min:0,max:100,ticks:{color:'#8b949e',font:{size:10}},grid:{color:'#21262d'},
+          y2Lines:[20,35,55,75]}
+      }
+    }
+  });
+}
+function fillTable(history){
+  const h=[...history].slice(-30).reverse();
+  document.getElementById('histBody').innerHTML=h.map(x=>{
+    const cc=colorChg(x.change);const pc=phaseColor(x.phase);
+    return '<tr><td class="l">'+x.date+'</td><td><b>'+x.temperature+'</b></td><td class="'+cc+'">'+fmtChg(x.change)+'</td><td style="color:'+pc+'">'+x.phase+'</td><td>'+x.entry_score+'</td><td>'+x.signal+'</td><td class="red">'+(x.limit_up||0)+'</td><td>'+(x.broken_rate||0)+'%</td></tr>';
+  }).join('');
+}
+init();
+</script>
+</body>
+</html>

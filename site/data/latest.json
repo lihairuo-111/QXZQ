@@ -1,0 +1,13 @@
+{
+  "trade_day": null,
+  "update_time": null,
+  "temperature": 0,
+  "prev_temperature": null,
+  "change": 0,
+  "phase": "等待更新",
+  "entry_score": 0,
+  "signal": "等待更新",
+  "indicators": {},
+  "parts": {},
+  "data_source": "AKShare"
+}
