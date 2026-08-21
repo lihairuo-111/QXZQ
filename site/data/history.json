@@ -1,15 +1,15 @@
 [
   {
     "date": "2026-08-21",
-    "temperature": 51.3,
+    "temperature": 50.8,
     "change": 0.0,
     "phase": "修复阶段",
     "entry_score": 60,
     "signal": "持有为主",
-    "limit_up": 54,
+    "limit_up": 53,
     "limit_down": 14,
     "max_board": 3,
-    "broken_rate": 25.0,
+    "broken_rate": 26.4,
     "amount_yi": 0,
     "index_chg": 0.24
   }
