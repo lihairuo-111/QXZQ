@@ -1,6 +1,6 @@
 {
   "trade_day": "2026-08-24",
-  "update_time": "2026-08-24 09:06:15",
+  "update_time": "2026-08-24 10:00:50",
   "temperature": 53.7,
   "prev_temperature": 51.6,
   "change": 2.1,
@@ -20,12 +20,12 @@
     "broken_rate": 25.8,
     "prev_zt_feedback": 0.53,
     "amount_yi": 0,
-    "index_close": 3905.2,
-    "index_chg": 0.04,
+    "index_close": 3882.01,
+    "index_chg": -0.59,
     "index_trend": "震荡",
-    "ma5": 3935.26,
-    "ma10": 3937.78,
-    "ma20": 3893.28
+    "ma5": 3915.13,
+    "ma10": 3929.32,
+    "ma20": 3894.47
   },
   "parts": {
     "breadth": 50.0,
