@@ -152,5 +152,19 @@
     "broken_rate": 55.2,
     "amount_yi": 0,
     "index_chg": -0.3
+  },
+  {
+    "date": "2026-09-07",
+    "temperature": 76.2,
+    "change": 28.1,
+    "phase": "亢奋退潮",
+    "entry_score": 15,
+    "signal": "控制仓位",
+    "limit_up": 93,
+    "limit_down": 2,
+    "max_board": 6,
+    "broken_rate": 17.0,
+    "amount_yi": 0,
+    "index_chg": 0.07
   }
 ]
