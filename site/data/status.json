@@ -2,7 +2,7 @@
   "today": "2026-09-25",
   "trade_day": "2026-09-24",
   "is_trading_day": false,
-  "last_update": "2026-09-25 13:48:48",
+  "last_update": "2026-09-25 14:34:34",
   "success": true,
   "error": null,
   "note": "非交易日,使用最近交易日数据",
