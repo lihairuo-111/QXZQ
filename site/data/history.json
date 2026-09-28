@@ -348,5 +348,19 @@
     "broken_rate": 16.1,
     "amount_yi": 0,
     "index_chg": -1.22
+  },
+  {
+    "date": "2026-09-28",
+    "temperature": 38.8,
+    "change": -18.2,
+    "phase": "修复阶段",
+    "entry_score": 60,
+    "signal": "持有为主",
+    "limit_up": 33,
+    "limit_down": 56,
+    "max_board": 5,
+    "broken_rate": 25.0,
+    "amount_yi": 0,
+    "index_chg": -1.67
   }
 ]
