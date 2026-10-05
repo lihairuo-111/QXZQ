@@ -1,8 +1,8 @@
 {
-  "today": "2026-10-02",
+  "today": "2026-10-05",
   "trade_day": "2026-09-30",
   "is_trading_day": false,
-  "last_update": "2026-10-02 15:44:58",
+  "last_update": "2026-10-05 17:09:34",
   "success": true,
   "error": null,
   "note": "非交易日,使用最近交易日数据",
