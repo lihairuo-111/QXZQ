@@ -404,5 +404,19 @@
     "broken_rate": 42.7,
     "amount_yi": 0,
     "index_chg": -0.79
+  },
+  {
+    "date": "2026-10-09",
+    "temperature": 61.9,
+    "change": 14.2,
+    "phase": "活跃加速",
+    "entry_score": 38,
+    "signal": "顺势持有",
+    "limit_up": 69,
+    "limit_down": 8,
+    "max_board": 9,
+    "broken_rate": 16.9,
+    "amount_yi": 0,
+    "index_chg": 0.05
   }
 ]
