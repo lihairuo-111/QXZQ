@@ -1,11 +1,11 @@
 {
-  "today": "2026-10-16",
-  "trade_day": "2026-10-16",
+  "today": "2026-10-19",
+  "trade_day": "2026-10-19",
   "is_trading_day": true,
-  "last_update": "2026-10-16 13:55:29",
+  "last_update": "2026-10-19 15:37:08",
   "success": true,
   "error": null,
   "note": "正常更新",
-  "temperature": 48.6,
+  "temperature": 44.2,
   "phase": "修复阶段"
 }
