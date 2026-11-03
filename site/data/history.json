@@ -407,8 +407,8 @@
   },
   {
     "date": "2026-11-03",
-    "temperature": 43.0,
-    "change": -24.4,
+    "temperature": 45.7,
+    "change": -21.7,
     "phase": "修复阶段",
     "entry_score": 60,
     "signal": "持有为主",
@@ -416,7 +416,7 @@
     "limit_down": 17,
     "max_board": 4,
     "broken_rate": 41.5,
-    "amount_yi": 17151.0,
+    "amount_yi": 0,
     "index_chg": -0.82
   }
 ]
