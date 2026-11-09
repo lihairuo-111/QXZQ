@@ -1,19 +1,5 @@
 [
   {
-    "date": "2026-09-18",
-    "temperature": 60.5,
-    "change": 8.1,
-    "phase": "活跃加速",
-    "entry_score": 38,
-    "signal": "顺势持有",
-    "limit_up": 78,
-    "limit_down": 0,
-    "max_board": 4,
-    "broken_rate": 24.3,
-    "amount_yi": 0,
-    "index_chg": 0.94
-  },
-  {
     "date": "2026-09-21",
     "temperature": 65.9,
     "change": 5.4,
@@ -418,5 +404,19 @@
     "broken_rate": 30.4,
     "amount_yi": 16716.0,
     "index_chg": -1.1
+  },
+  {
+    "date": "2026-11-09",
+    "temperature": 62.6,
+    "change": 24.5,
+    "phase": "活跃加速",
+    "entry_score": 38,
+    "signal": "顺势持有",
+    "limit_up": 0,
+    "limit_down": 1,
+    "max_board": 0,
+    "broken_rate": 0.0,
+    "amount_yi": 0,
+    "index_chg": 0.32
   }
 ]
